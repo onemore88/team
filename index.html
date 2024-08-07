@@ -102,12 +102,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>LOL 내전 팀 짜기</h1>
+        <h1>LOL 팀 짜기</h1>
         
         <div class="entry-form">
             <h2>선수 등록</h2>
             <input type="text" id="playerName" placeholder="선수 이름">
-            <select id="playerGrade">
+            <select id="playerTier">
                 <option value="">티어 선택</option>
                 <option value="1">1티어</option>
                 <option value="2">2티어</option>
@@ -164,194 +164,263 @@
     </div>
 
     <script>
-        let players = [];
+    let players = [];
+    const GIST_ID = 'YOUR_GIST_ID_HERE'; // Gist를 처음 만들 때는 비워두세요
+    const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN_HERE';
 
-        // 페이지 로드 시 저장된 엔트리 명단 불러오기
-        window.onload = function() {
-            loadEntryList();
-        };
+    // 페이지 로드 시 저장된 엔트리 명단 불러오기
+    window.onload = function() {
+        loadEntryList();
+    };
 
-        function addPlayer() {
-            const name = document.getElementById('playerName').value;
-            const grade = document.getElementById('playerGrade').value;
-            const position = document.getElementById('playerPosition').value;
+    function addPlayer() {
+        const name = document.getElementById('playerName').value;
+        const tier = document.getElementById('playerTier').value;
+        const position = document.getElementById('playerPosition').value;
 
-            if (name && grade && position) {
-                if (players.length < 20) {
-                    players.push({ name, grade, position, selected: false });
-                    updateEntryList();
-                    clearInputs();
-                } else {
-                    alert('최대 20명까지만 등록할 수 있습니다.');
-                }
+        if (name && tier && position) {
+            if (players.length < 20) {
+                players.push({ name, tier, position, selected: false });
+                updateEntryList();
+                clearInputs();
             } else {
-                alert('모든 필드를 입력해주세요.');
+                alert('최대 20명까지만 등록할 수 있습니다.');
             }
+        } else {
+            alert('모든 필드를 입력해주세요.');
         }
+    }
 
-        function updateEntryList() {
-            const entryList = document.getElementById('entryList');
-            entryList.innerHTML = `
-                <div class="list-header">
-                    <h3>엔트리 명단 <span id="entryCount" class="player-count">(${players.length}명)</span></h3>
-                    <label>
-                        <input type="checkbox" id="selectAll" onchange="toggleAllPlayers(this.checked)"> 전체 선택
-                    </label>
+    function updateEntryList() {
+        const entryList = document.getElementById('entryList');
+        entryList.innerHTML = `
+            <div class="list-header">
+                <h3>엔트리 명단 <span id="entryCount" class="player-count">(${players.length}명)</span></h3>
+                <label>
+                    <input type="checkbox" id="selectAll" onchange="toggleAllPlayers(this.checked)"> 전체 선택
+                </label>
+            </div>
+        `;
+        players.forEach((player, index) => {
+            const playerElement = document.createElement('div');
+            playerElement.className = `player ${player.selected ? 'selected' : ''}`;
+            playerElement.innerHTML = `
+                <span>${player.name} (${player.position})</span>
+                <div>
+                    <button onclick="editPlayer(${index})" ${player.selected ? 'disabled' : ''}>수정</button>
+                    <button onclick="deletePlayer(${index})" ${player.selected ? 'disabled' : ''}>삭제</button>
+                    <input type="checkbox" ${player.selected ? 'checked disabled' : ''} onchange="togglePlayerSelection(${index}, this.checked)">
                 </div>
             `;
-            players.forEach((player, index) => {
-                const playerElement = document.createElement('div');
-                playerElement.className = `player ${player.selected ? 'selected' : ''}`;
-                playerElement.innerHTML = `
-                    <span>${player.name} (${player.position})</span>
-                    <div>
-                        <button onclick="editPlayer(${index})" ${player.selected ? 'disabled' : ''}>수정</button>
-                        <button onclick="deletePlayer(${index})" ${player.selected ? 'disabled' : ''}>삭제</button>
-                        <input type="checkbox" ${player.selected ? 'checked disabled' : ''} onchange="togglePlayerSelection(${index}, this.checked)">
-                    </div>
-                `;
-                entryList.appendChild(playerElement);
-            });
-            updateSelectAllCheckbox();
-        }
+            entryList.appendChild(playerElement);
+        });
+        updateSelectAllCheckbox();
+    }
 
-        function clearInputs() {
-            document.getElementById('playerName').value = '';
-            document.getElementById('playerGrade').value = '';
-            document.getElementById('playerPosition').value = '';
-        }
+    function clearInputs() {
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerTier').value = '';
+        document.getElementById('playerPosition').value = '';
+    }
 
-        function editPlayer(index) {
-            const player = players[index];
-            document.getElementById('playerName').value = player.name;
-            document.getElementById('playerGrade').value = '';
-            document.getElementById('playerPosition').value = player.position;
-            players.splice(index, 1);
-            updateEntryList();
-        }
+    function editPlayer(index) {
+        const player = players[index];
+        document.getElementById('playerName').value = player.name;
+        document.getElementById('playerTier').value = ''; // 티어 셀렉박스 초기화
+        document.getElementById('playerPosition').value = player.position;
+        players.splice(index, 1);
+        updateEntryList();
+    }
 
-        function deletePlayer(index) {
-            players.splice(index, 1);
-            updateEntryList();
-            updateSelectedList();
-        }
+    function deletePlayer(index) {
+        players.splice(index, 1);
+        updateEntryList();
+        updateSelectedList();
+    }
 
-        function togglePlayerSelection(index, isSelected) {
-            players[index].selected = isSelected;
-            updateEntryList();
-            updateSelectedList();
-        }
+    function togglePlayerSelection(index, isSelected) {
+        players[index].selected = isSelected;
+        updateEntryList();
+        updateSelectedList();
+    }
 
-        function toggleAllPlayers(checked) {
-            players.forEach(player => {
-                if (!player.selected) {
-                    player.selected = checked;
-                }
-            });
-            updateEntryList();
-            updateSelectedList();
-        }
-
-        function updateSelectAllCheckbox() {
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const allSelected = players.every(player => player.selected);
-            const someSelected = players.some(player => player.selected);
-            selectAllCheckbox.checked = allSelected;
-            selectAllCheckbox.indeterminate = someSelected && !allSelected;
-        }
-
-        function selectPlayers() {
-            const selectedPlayers = players.filter(player => player.selected);
-            if (selectedPlayers.length > 10) {
-                alert('최대 10명까지만 선택할 수 있습니다.');
-                return;
+    function toggleAllPlayers(checked) {
+        players.forEach(player => {
+            if (!player.selected) {
+                player.selected = checked;
             }
-            updateSelectedList();
-        }
+        });
+        updateEntryList();
+        updateSelectedList();
+    }
 
-        function updateSelectedList() {
-            const selectedList = document.getElementById('selectedList');
-            const selectedPlayers = players.filter(player => player.selected);
-            selectedList.innerHTML = `
-                <div class="list-header">
-                    <h3>출전 명단 <span id="selectedCount" class="player-count">(${selectedPlayers.length}명)</span></h3>
-                </div>
+    function updateSelectAllCheckbox() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const allSelected = players.every(player => player.selected);
+        const someSelected = players.some(player => player.selected);
+        selectAllCheckbox.checked = allSelected;
+        selectAllCheckbox.indeterminate = someSelected && !allSelected;
+    }
+
+    function selectPlayers() {
+        const selectedPlayers = players.filter(player => player.selected);
+        if (selectedPlayers.length > 10) {
+            alert('최대 10명까지만 선택할 수 있습니다.');
+            return;
+        }
+        updateSelectedList();
+    }
+
+    function updateSelectedList() {
+        const selectedList = document.getElementById('selectedList');
+        const selectedPlayers = players.filter(player => player.selected);
+        selectedList.innerHTML = `
+            <div class="list-header">
+                <h3>출전 명단 <span id="selectedCount" class="player-count">(${selectedPlayers.length}명)</span></h3>
+            </div>
+        `;
+        selectedPlayers.forEach((player, index) => {
+            const playerElement = document.createElement('div');
+            playerElement.className = 'player';
+            playerElement.innerHTML = `
+                <span>${player.name} (${player.position})</span>
+                <button onclick="removeFromSelected(${index})">제외</button>
             `;
-            selectedPlayers.forEach((player, index) => {
-                const playerElement = document.createElement('div');
-                playerElement.className = 'player';
-                playerElement.innerHTML = `
-                    <span>${player.name} (${player.position})</span>
-                    <button onclick="removeFromSelected(${index})">제외</button>
-                `;
-                selectedList.appendChild(playerElement);
-            });
+            selectedList.appendChild(playerElement);
+        });
+    }
+
+    function removeFromSelected(index) {
+        const playerIndex = players.findIndex(player => player.selected);
+        if (playerIndex !== -1) {
+            players[playerIndex].selected = false;
+            updateEntryList();
+            updateSelectedList();
+        }
+    }
+
+    function makeTeams() {
+        const selectedPlayers = players.filter(player => player.selected);
+
+        if (selectedPlayers.length !== 10) {
+            alert('정확히 10명의 선수를 선택해주세요.');
+            return;
         }
 
-        function removeFromSelected(index) {
-            const playerIndex = players.findIndex(player => player.selected);
-            if (playerIndex !== -1) {
-                players[playerIndex].selected = false;
-                updateEntryList();
-                updateSelectedList();
+        // 티어와 포지션을 고려한 팀 배정 알고리즘
+        selectedPlayers.sort((a, b) => a.tier - b.tier);
+        const blueTeam = [];
+        const redTeam = [];
+
+        for (let i = 0; i < 10; i++) {
+            if (i % 2 === 0) {
+                blueTeam.push(selectedPlayers[i]);
+            } else {
+                redTeam.push(selectedPlayers[i]);
             }
         }
 
-        function makeTeams() {
-            const selectedPlayers = players.filter(player => player.selected);
+        // 포지션 섞기
+        blueTeam.sort(() => Math.random() - 0.5);
+        redTeam.sort(() => Math.random() - 0.5);
 
-            if (selectedPlayers.length !== 10) {
-                alert('정확히 10명의 선수를 선택해주세요.');
-                return;
+        displayTeam('blueTeam', blueTeam);
+        displayTeam('redTeam', redTeam);
+    }
+
+    function displayTeam(teamId, team) {
+        const teamElement = document.getElementById(teamId);
+        teamElement.innerHTML = `<h3>${teamId === 'blueTeam' ? '블루 팀' : '레드 팀'}</h3>`;
+        team.forEach(player => {
+            const playerElement = document.createElement('div');
+            playerElement.className = 'player';
+            playerElement.innerHTML = `${player.name} (${player.position})`;
+            teamElement.appendChild(playerElement);
+        });
+    }
+
+    // 엔트리 명단 저장 함수
+    async function saveEntryList() {
+        const content = JSON.stringify(players);
+        const filename = 'entry_list.json';
+        
+        try {
+            if (GIST_ID) {
+                // 기존 Gist 업데이트
+                await updateGist(GIST_ID, filename, content);
+            } else {
+                // 새 Gist 생성
+                const newGistId = await createGist(filename, content);
+                console.log('New Gist created. Please update the GIST_ID in your code with:', newGistId);
             }
-
-            // 티어과 포지션을 고려한 팀 배정 알고리즘
-            selectedPlayers.sort((a, b) => a.grade - b.grade);
-            const blueTeam = [];
-            const redTeam = [];
-
-            for (let i = 0; i < 10; i++) {
-                if (i % 2 === 0) {
-                    blueTeam.push(selectedPlayers[i]);
-                } else {
-                    redTeam.push(selectedPlayers[i]);
-                }
-            }
-
-            // 포지션 섞기
-            blueTeam.sort(() => Math.random() - 0.5);
-            redTeam.sort(() => Math.random() - 0.5);
-
-            displayTeam('blueTeam', blueTeam);
-            displayTeam('redTeam', redTeam);
-        }
-
-        function displayTeam(teamId, team) {
-            const teamElement = document.getElementById(teamId);
-            teamElement.innerHTML = `<h3>${teamId === 'blueTeam' ? '블루 팀' : '레드 팀'}</h3>`;
-            team.forEach(player => {
-                const playerElement = document.createElement('div');
-                playerElement.className = 'player';
-                playerElement.innerHTML = `${player.name} (${player.position})`;
-                teamElement.appendChild(playerElement);
-            });
-        }
-
-        // 엔트리 명단 저장 함수
-        function saveEntryList() {
-            localStorage.setItem('entryList', JSON.stringify(players));
             alert('엔트리 명단이 저장되었습니다.');
+        } catch (error) {
+            console.error('Error saving entry list:', error);
+            alert('저장 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 엔트리 명단 불러오기 함수
+    async function loadEntryList() {
+        if (!GIST_ID) {
+            console.log('GIST_ID is not set. Unable to load data.');
+            return;
         }
 
-        // 엔트리 명단 불러오기 함수
-        function loadEntryList() {
-            const savedEntryList = localStorage.getItem('entryList');
-            if (savedEntryList) {
-                players = JSON.parse(savedEntryList);
-                updateEntryList();
-                updateSelectedList();
-            }
+        try {
+            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`
+                }
+            });
+            const data = await response.json();
+            const content = data.files['entry_list.json'].content;
+            players = JSON.parse(content);
+            updateEntryList();
+            updateSelectedList();
+        } catch (error) {
+            console.error('Error loading entry list:', error);
+            alert('데이터를 불러오는 중 오류가 발생했습니다.');
         }
+    }
+
+    async function createGist(filename, content) {
+        const response = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                description: 'LOL Team Builder Entry List',
+                public: false,
+                files: {
+                    [filename]: {
+                        content: content
+                    }
+                }
+            })
+        });
+        const data = await response.json();
+        return data.id;
+    }
+
+    async function updateGist(gistId, filename, content) {
+        await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                files: {
+                    [filename]: {
+                        content: content
+                    }
+                }
+            })
+        });
+    }
     </script>
 </body>
 </html>
