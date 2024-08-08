@@ -380,7 +380,8 @@
             updateSelectedList();
         } catch (error) {
             console.error('Error loading entry list:', error);
-            alert('데이터를 불러오는 중 오류가 발생했습니다.');
+            const newGistId = await createGist(filename, content);
+            alert(`새 Gist가 생성되었습니다. GIST_ID: ${newGistId}\n이 ID를 코드의 GIST_ID 변수에 업데이트해주세요.`);
         }
     }
 
