@@ -5,98 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOL 팀 짜기</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
         }
         .container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
             padding: 20px;
-            width: 90%;
-            max-width: 1200px;
         }
         h1, h2 {
+            text-align: center;
             color: #1a237e;
-        }
-        .entry-form, .team-selection {
             margin-bottom: 20px;
         }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
         input, select {
-            margin: 5px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button {
+            width: 100%;
             background-color: #1a237e;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
         button:hover {
             background-color: #3949ab;
         }
-        .lists {
-            display: flex;
-            justify-content: space-between;
+        .player-list {
+            list-style-type: none;
         }
-        .list {
-            width: 48%;
-            min-height: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-        }
-        .player {
+        .player-item {
             background-color: #e8eaf6;
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .player.selected {
+        .player-item.selected {
             background-color: #c5cae9;
-            opacity: 0.7;
         }
-        .teams {
+        .player-actions {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+            gap: 10px;
         }
         .team {
-            width: 48%;
-            background-color: #e8eaf6;
-            border-radius: 4px;
-            padding: 10px;
-        }
-        .blue-team {
             background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .team h3 {
+            margin-bottom: 10px;
         }
         .red-team {
             background-color: #ffebee;
         }
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .player-count {
-            font-size: 0.9em;
-            color: #666;
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .card {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -104,57 +107,58 @@
     <div class="container">
         <h1>LOL 팀 짜기</h1>
         
-        <div class="entry-form">
+        <div class="card">
             <h2>선수 등록</h2>
-            <input type="text" id="playerName" placeholder="선수 이름">
-            <select id="playerTier">
-                <option value="">티어 선택</option>
-                <option value="1">1티어</option>
-                <option value="2">2티어</option>
-                <option value="3">3티어</option>
-                <option value="4">4티어</option>
-                <option value="5">5티어</option>
-            </select>
-            <select id="playerPosition">
-                <option value="">포지션 선택</option>
-                <option value="탑">탑</option>
-                <option value="정글">정글</option>
-                <option value="미드">미드</option>
-                <option value="바텀">바텀</option>
-                <option value="서폿">서폿</option>
-            </select>
+            <div class="form-group">
+                <label for="playerName">이름</label>
+                <input type="text" id="playerName" placeholder="선수 이름">
+            </div>
+            <div class="form-group">
+                <label for="playerTier">티어</label>
+                <select id="playerTier">
+                    <option value="">티어 선택</option>
+                    <option value="1">1티어</option>
+                    <option value="2">2티어</option>
+                    <option value="3">3티어</option>
+                    <option value="4">4티어</option>
+                    <option value="5">5티어</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="playerPosition">포지션</label>
+                <select id="playerPosition">
+                    <option value="">포지션 선택</option>
+                    <option value="탑">탑</option>
+                    <option value="정글">정글</option>
+                    <option value="미드">미드</option>
+                    <option value="바텀">바텀</option>
+                    <option value="서폿">서폿</option>
+                </select>
+            </div>
             <button onclick="addPlayer()">선수 추가</button>
         </div>
 
-        <div class="team-selection">
-            <h2>팀 선택</h2>
-            <div class="lists">
-                <div class="list" id="entryList">
-                    <div class="list-header">
-                        <h3>엔트리 명단 <span id="entryCount" class="player-count"></span></h3>
-                        <label>
-                            <input type="checkbox" id="selectAll" onchange="toggleAllPlayers(this.checked)"> 전체 선택
-                        </label>
-                    </div>
-                    <!-- 선수들이 여기에 추가됩니다 -->
-                </div>
-                <div class="list" id="selectedList">
-                    <div class="list-header">
-                        <h3>출전 명단 <span id="selectedCount" class="player-count"></span></h3>
-                    </div>
-                    <!-- 선택된 선수들이 여기에 추가됩니다 -->
-                </div>
-            </div>
-            <button onclick="selectPlayers()">선수 선택</button>
+        <div class="card">
+            <h2>엔트리 명단 <span id="entryCount"></span></h2>
+            <ul id="entryList" class="player-list">
+                <!-- 선수들이 여기에 추가됩니다 -->
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>출전 명단 <span id="selectedCount"></span></h2>
+            <ul id="selectedList" class="player-list">
+                <!-- 선택된 선수들이 여기에 추가됩니다 -->
+            </ul>
             <button onclick="makeTeams()">팀 만들기</button>
         </div>
 
-        <div class="teams">
-            <div class="team blue-team" id="blueTeam">
+        <div class="card">
+            <div id="blueTeam" class="team">
                 <h3>블루 팀</h3>
                 <!-- 블루 팀 선수들이 여기에 추가됩니다 -->
             </div>
-            <div class="team red-team" id="redTeam">
+            <div id="redTeam" class="team red-team">
                 <h3>레드 팀</h3>
                 <!-- 레드 팀 선수들이 여기에 추가됩니다 -->
             </div>
@@ -165,10 +169,9 @@
 
     <script>
     let players = [];
-    const GIST_ID = 'YOUR_GIST_ID_HERE'; // Gist를 처음 만들 때는 비워두세요
-    const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN_HERE';
+    const GIST_ID = '12e645e1d1662da1be1ab2dfc00ff4e8'; // Gist를 처음 만들 때는 비워두세요
+    const GITHUB_TOKEN = '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';
 
-    // 페이지 로드 시 저장된 엔트리 명단 불러오기
     window.onload = function() {
         loadEntryList();
     };
@@ -193,28 +196,24 @@
 
     function updateEntryList() {
         const entryList = document.getElementById('entryList');
-        entryList.innerHTML = `
-            <div class="list-header">
-                <h3>엔트리 명단 <span id="entryCount" class="player-count">(${players.length}명)</span></h3>
-                <label>
-                    <input type="checkbox" id="selectAll" onchange="toggleAllPlayers(this.checked)"> 전체 선택
-                </label>
-            </div>
-        `;
+        const entryCount = document.getElementById('entryCount');
+        entryList.innerHTML = '';
+        entryCount.textContent = `(${players.length}명)`;
+
         players.forEach((player, index) => {
-            const playerElement = document.createElement('div');
-            playerElement.className = `player ${player.selected ? 'selected' : ''}`;
-            playerElement.innerHTML = `
+            const li = document.createElement('li');
+            li.className = `player-item ${player.selected ? 'selected' : ''}`;
+            li.innerHTML = `
                 <span>${player.name} (${player.position})</span>
-                <div>
+                <div class="player-actions">
                     <button onclick="editPlayer(${index})" ${player.selected ? 'disabled' : ''}>수정</button>
                     <button onclick="deletePlayer(${index})" ${player.selected ? 'disabled' : ''}>삭제</button>
-                    <input type="checkbox" ${player.selected ? 'checked disabled' : ''} onchange="togglePlayerSelection(${index}, this.checked)">
+                    <input type="checkbox" ${player.selected ? 'checked' : ''} onchange="togglePlayerSelection(${index}, this.checked)">
                 </div>
             `;
-            entryList.appendChild(playerElement);
+            entryList.appendChild(li);
         });
-        updateSelectAllCheckbox();
+        updateSelectedList();
     }
 
     function clearInputs() {
@@ -226,7 +225,7 @@
     function editPlayer(index) {
         const player = players[index];
         document.getElementById('playerName').value = player.name;
-        document.getElementById('playerTier').value = ''; // 티어 셀렉박스 초기화
+        document.getElementById('playerTier').value = player.tier;
         document.getElementById('playerPosition').value = player.position;
         players.splice(index, 1);
         updateEntryList();
@@ -235,58 +234,28 @@
     function deletePlayer(index) {
         players.splice(index, 1);
         updateEntryList();
-        updateSelectedList();
     }
 
     function togglePlayerSelection(index, isSelected) {
         players[index].selected = isSelected;
         updateEntryList();
-        updateSelectedList();
-    }
-
-    function toggleAllPlayers(checked) {
-        players.forEach(player => {
-            if (!player.selected) {
-                player.selected = checked;
-            }
-        });
-        updateEntryList();
-        updateSelectedList();
-    }
-
-    function updateSelectAllCheckbox() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const allSelected = players.every(player => player.selected);
-        const someSelected = players.some(player => player.selected);
-        selectAllCheckbox.checked = allSelected;
-        selectAllCheckbox.indeterminate = someSelected && !allSelected;
-    }
-
-    function selectPlayers() {
-        const selectedPlayers = players.filter(player => player.selected);
-        if (selectedPlayers.length > 10) {
-            alert('최대 10명까지만 선택할 수 있습니다.');
-            return;
-        }
-        updateSelectedList();
     }
 
     function updateSelectedList() {
         const selectedList = document.getElementById('selectedList');
+        const selectedCount = document.getElementById('selectedCount');
         const selectedPlayers = players.filter(player => player.selected);
-        selectedList.innerHTML = `
-            <div class="list-header">
-                <h3>출전 명단 <span id="selectedCount" class="player-count">(${selectedPlayers.length}명)</span></h3>
-            </div>
-        `;
+        selectedList.innerHTML = '';
+        selectedCount.textContent = `(${selectedPlayers.length}명)`;
+
         selectedPlayers.forEach((player, index) => {
-            const playerElement = document.createElement('div');
-            playerElement.className = 'player';
-            playerElement.innerHTML = `
+            const li = document.createElement('li');
+            li.className = 'player-item';
+            li.innerHTML = `
                 <span>${player.name} (${player.position})</span>
                 <button onclick="removeFromSelected(${index})">제외</button>
             `;
-            selectedList.appendChild(playerElement);
+            selectedList.appendChild(li);
         });
     }
 
@@ -295,7 +264,6 @@
         if (playerIndex !== -1) {
             players[playerIndex].selected = false;
             updateEntryList();
-            updateSelectedList();
         }
     }
 
@@ -307,7 +275,6 @@
             return;
         }
 
-        // 티어와 포지션을 고려한 팀 배정 알고리즘
         selectedPlayers.sort((a, b) => a.tier - b.tier);
         const blueTeam = [];
         const redTeam = [];
@@ -320,7 +287,6 @@
             }
         }
 
-        // 포지션 섞기
         blueTeam.sort(() => Math.random() - 0.5);
         redTeam.sort(() => Math.random() - 0.5);
 
@@ -333,34 +299,31 @@
         teamElement.innerHTML = `<h3>${teamId === 'blueTeam' ? '블루 팀' : '레드 팀'}</h3>`;
         team.forEach(player => {
             const playerElement = document.createElement('div');
-            playerElement.className = 'player';
-            playerElement.innerHTML = `${player.name} (${player.position})`;
+            playerElement.className = 'player-item';
+            playerElement.textContent = `${player.name} (${player.position})`;
             teamElement.appendChild(playerElement);
         });
     }
 
-    // 엔트리 명단 저장 함수
     async function saveEntryList() {
         const content = JSON.stringify(players);
         const filename = 'entry_list.json';
         
         try {
             if (GIST_ID) {
-                // 기존 Gist 업데이트
                 await updateGist(GIST_ID, filename, content);
+                alert('엔트리 명단이 업데이트되었습니다.');
             } else {
-                // 새 Gist 생성
                 const newGistId = await createGist(filename, content);
+                alert(`새 Gist가 생성되었습니다. GIST_ID: ${newGistId}\n이 ID를 코드의 GIST_ID 변수에 업데이트해주세요.`);
                 console.log('New Gist created. Please update the GIST_ID in your code with:', newGistId);
             }
-            alert('엔트리 명단이 저장되었습니다.');
         } catch (error) {
             console.error('Error saving entry list:', error);
             alert('저장 중 오류가 발생했습니다.');
         }
     }
 
-    // 엔트리 명단 불러오기 함수
     async function loadEntryList() {
         if (!GIST_ID) {
             console.log('GIST_ID is not set. Unable to load data.');
@@ -377,11 +340,9 @@
             const content = data.files['entry_list.json'].content;
             players = JSON.parse(content);
             updateEntryList();
-            updateSelectedList();
         } catch (error) {
             console.error('Error loading entry list:', error);
-            const newGistId = await createGist(filename, content);
-            alert(`새 Gist가 생성되었습니다. GIST_ID: ${newGistId}\n이 ID를 코드의 GIST_ID 변수에 업데이트해주세요.`);
+            alert('데이터를 불러오는 중 오류가 발생했습니다.');
         }
     }
 
